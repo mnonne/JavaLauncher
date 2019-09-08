@@ -18,19 +18,30 @@ public class Simulator
         try {
             reader = new BufferedReader(new FileReader(args[0]));
             getNumSimulations(reader.readLine());
-            getAircrafts(reader);
+            try {
+                getAircrafts(reader);
+            } catch (LauncherException e) {
+                System.out.println(e.getMessage());
+            }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private static void getAircrafts(BufferedReader reader) {
+    private static void getAircrafts(BufferedReader reader) throws LauncherException {
         try {
             String line = reader.readLine();
             while (line != null) {
                 try {
-                    Aircrafts.add(AircraftFactory.newAircraft("Baloon", "B1", 1, 1, 1));
-                    System.out.println(line);
+                    String[] args = line.split("\\s+");
+                    if (args.length != 5) {
+                        throw new LauncherException("Failed to create vehicle: Incorrect number of parameters to create aircraft [" + line + "]");
+                    }
+                    try {
+                        Aircrafts.add(AircraftFactory.newAircraft(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Failed to parse integer from [" + line + "]");
+                    }
                 } catch (LauncherException e) {
                     System.out.println(e.getMessage());
                 }
